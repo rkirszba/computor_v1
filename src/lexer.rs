@@ -171,6 +171,28 @@ pub enum Lexem {
 	End { index: usize, len: usize }
 }
 
+impl Lexem {
+	pub fn get_index(&self) -> usize {
+		match self {
+			Lexem::Number { value:_, index, len:_} => *index,
+			Lexem::Plus { index, len: _ } => *index,
+			Lexem::Minus { index, len: _ } => *index,
+			Lexem::Mult { index, len: _ } => *index,
+			Lexem::Power { index, len: _ } => *index,
+			Lexem::Equal { index, len: _ } => *index,
+			Lexem::X { index, len: _ } => *index,
+			Lexem::End { index, len: _ } => *index
+		}
+	}
+
+	pub fn get_value(&self) -> f64 {
+		match self {
+			Lexem::Number { value, index:_, len:_} => *value,
+			_ => 0.0
+		}
+	}
+}
+
 pub enum State {
 	Initial,
 	Transitory,
