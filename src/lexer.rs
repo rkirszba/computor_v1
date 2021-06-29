@@ -142,8 +142,8 @@ pub enum LexicalError {
 impl fmt::Display for LexicalError {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 		match self {
-			LexicalError::UnexpectedCharacter(_, pos) =>
-			write!(f, "Unexpected character found at index {}", pos),
+			LexicalError::UnexpectedCharacter(c, pos) =>
+			write!(f, "Unexpected character '{}' found at index {}", c, pos),
 			LexicalError::TooBigNumber(number, pos) =>
 			write!(f, "'{}' (at index {}) is a too big number", number, pos)
         }
