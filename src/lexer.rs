@@ -1,5 +1,6 @@
 use std::{fmt, str};
 use std::error::Error;
+use std::mem;
 
 
 pub struct Lexer {
@@ -108,16 +109,12 @@ impl Lexer {
 				State::Initial => lexem_start = cursor + 1,
 				State::Transitory => (),
 				State::Final(lexem_type) => {
-					if let Err(e) = self.add_lexem(lexem_type, equation, lexem_start, cursor + 1) {
-						return Err(e);
-					};
+					self.add_lexem(lexem_type, equation, lexem_start, cursor + 1)?;
 					lexem_start = cursor + 1;
 					state = 0;
 				},
 				State::FinalStar(lexem_type) => {
-					if let Err(e) = self.add_lexem(lexem_type, equation, lexem_start, cursor) {
-						return Err(e);
-					};
+					self.add_lexem(lexem_type, equation, lexem_start, cursor)?;
 					lexem_start = cursor;
 					state = 0;
 					cursor -= 1;
@@ -159,7 +156,7 @@ impl<'a> fmt::Debug for LexicalError  {
 impl Error for LexicalError {}
 
 
-
+#[derive(Copy, Clone)]
 pub enum Lexem {
 	Plus { index: usize, len: usize },
 	Minus { index: usize, len: usize },
@@ -193,7 +190,14 @@ impl Lexem {
 	}
 }
 
-pub enum State {
+impl PartialEq for Lexem {
+	
+	fn eq(&self, other: &Self) -> bool {
+		mem::discriminant(self) == mem::discriminant(other)
+	}
+}
+
+enum State {
 	Initial,
 	Transitory,
 	Final(Lexem),
