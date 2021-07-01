@@ -15,7 +15,7 @@ impl <'a> Parser {
 		let mut degrees: HashMap<u32, f64> = HashMap::new();
 		degrees.insert(0, 0.0);
 		Parser {
-			degrees: degrees
+			degrees
 		}
 	}
 
