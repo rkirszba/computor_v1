@@ -139,6 +139,7 @@ impl Solver for TwoDegreeSolver {
 		}
 	}
 }
+
 pub struct Complex {
 	real: f64,
 	imag: f64
