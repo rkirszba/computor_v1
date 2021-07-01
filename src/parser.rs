@@ -12,13 +12,19 @@ pub struct Parser {
 impl <'a> Parser {
 
 	pub fn new() -> Self {
+		let mut degrees: HashMap<u32, f64> = HashMap::new();
+		degrees.insert(0, 0.0);
 		Parser {
-			degrees: HashMap::new()
+			degrees: degrees
 		}
 	}
 
 	fn update_hashmap(&mut self, term: &Term) {
-		unimplemented!();	
+		let val: &mut f64 = self.degrees.entry(term.degree).or_insert(0.0);
+		*val += term.coeff;
+		if *val == 0.0 && term.degree != 0 {
+			self.degrees.remove(&term.degree);
+		}
 	} 
 
 	fn get_next_lexem(&self, lexems: &'a Vec<Lexem>, cursor: &mut usize) -> Result<&'a Lexem, ParseError>
@@ -54,7 +60,7 @@ impl <'a> Parser {
 					lexem_2 => Err(ParseError::UnexpectedToken(*lexem_2))
 				}
 			},
-			_ => Ok(1)
+			_ => { *cursor -= 1; Ok(1) }
 		}
 	}
 
@@ -65,7 +71,7 @@ impl <'a> Parser {
 				self.degree(lexems, cursor)
 			}
 			lexem if *lexem == Lexem::X { index: 0, len: 0 } => self.degree(lexems, cursor),
-			_ => Ok(0)
+			_ => { *cursor -= 1; Ok(0) }
 		}
 	}
 
@@ -93,7 +99,7 @@ impl <'a> Parser {
 		match self.get_next_lexem(lexems, cursor)? {
 			lexem if *lexem == Lexem::Plus { index: 0, len: 0 } => (),
 			lexem if *lexem == Lexem::Minus { index: 0, len: 0 } => sign *= -1,
-			_ => { *cursor -= 1; return Ok(())}
+			_ => { *cursor -= 1; return Ok(()) }
 		};
 		let mut term = self.term(lexems, cursor)?;
 		term.coeff *= sign as f64;
@@ -128,6 +134,10 @@ impl <'a> Parser {
 	pub fn run(&mut self, lexems: &Vec<Lexem>) -> Result<(), ParseError> {
 		self.degrees = HashMap::new();
 		self.equation(lexems)	
+	}
+
+	pub fn get_degrees(&self) -> &HashMap<u32, f64> {
+		&self.degrees
 	}
 }
 
