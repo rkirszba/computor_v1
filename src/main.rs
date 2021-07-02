@@ -4,6 +4,9 @@ use structopt::StructOpt;
 use computor_v1::args;
 use computor_v1::lexer::Lexer;
 use computor_v1::parser::Parser;
+use computor_v1::solver;
+
+
 
 fn main() -> Result<(), Box<dyn Error>> {
     
@@ -17,8 +20,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut parser = Parser::new();
     parser.run(lexems)?;
     let degrees = parser.get_degrees();
-    for (degree, coeff) in degrees {
-        println!("Degree: {} -- Coeff: {}", degree, coeff);
-    }
+    // for (degree, coeff) in degrees {
+    //     println!("Degree: {} -- Coeff: {}", degree, coeff);
+    // }
+    let mut solver = solver::choose_solver(degrees);
+    solver.solve(degrees);
+    solver.describe();
+
     Ok(())
 }

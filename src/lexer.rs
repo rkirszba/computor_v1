@@ -2,7 +2,6 @@ use std::{fmt, str};
 use std::error::Error;
 use std::mem;
 
-
 pub struct Lexer {
 	lexems: Vec<Lexem>
 }

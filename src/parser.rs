@@ -12,10 +12,8 @@ pub struct Parser {
 impl <'a> Parser {
 
 	pub fn new() -> Self {
-		let mut degrees: HashMap<u32, f64> = HashMap::new();
-		degrees.insert(0, 0.0);
 		Parser {
-			degrees
+			degrees: HashMap::new()
 		}
 	}
 
@@ -133,7 +131,8 @@ impl <'a> Parser {
 	
 	pub fn run(&mut self, lexems: &Vec<Lexem>) -> Result<(), ParseError> {
 		self.degrees = HashMap::new();
-		self.equation(lexems)	
+		self.degrees.insert(0, 0.0);
+		self.equation(lexems)
 	}
 
 	pub fn get_degrees(&self) -> &HashMap<u32, f64> {

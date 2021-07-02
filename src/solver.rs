@@ -1,5 +1,8 @@
 use std::collections::HashMap;
 
+use crate::maths;
+use crate::maths::Complex;
+
 pub trait Solver {
 	fn solve(&mut self, degrees: &HashMap<u32, f64>);
 	fn describe(&self);
@@ -25,7 +28,7 @@ impl Solver for ZeroDegreeSolver {
 	}
 
 	fn describe(&self) {
-		println!("Reduced form: {} {} * X ^ 0 = 0", if self.degree_0 < 0.0 {"-"} else {""}, self.degree_0.abs());
+		println!("Reduced form: {}{} * X ^ 0 = 0", if self.degree_0 < 0.0 {"- "} else {""}, self.degree_0.abs());
 		println!("Polynomial degree: 0");
 		if self.degree_0 == 0.0 {
 			println!("All real numbers are solution");
@@ -62,8 +65,8 @@ impl Solver for OneDegreeSolver {
 	}
 
 	fn describe(&self) {
-		println!("Reduced form: {} {} * X ^ 0 {} {} * X ^ 1 = 0",
-			if self.degree_0 < 0.0 {"-"} else {""}, self.degree_0.abs(),
+		println!("Reduced form: {}{} * X^0 {} {} * X^1 = 0",
+			if self.degree_0 < 0.0 {"- "} else {""}, self.degree_0.abs(),
 			if self.degree_1 < 0.0 {"-"} else {"+"}, self.degree_1.abs());
 		println!("Polynomial degree: 1");
 		println!("The solution is:\n{}", self.x);
@@ -104,12 +107,12 @@ impl Solver for TwoDegreeSolver {
 			self.z_1.real = - self.degree_1 / (2.0 * self.degree_2);
 		}
 		else if self.delta > 0.0 {
-			let sqrt_delta = sqrt(self.delta);
+			let sqrt_delta = maths::sqrt(self.delta);
 			self.z_1.real = - (- self.degree_1 - sqrt_delta) / (2.0 * self.degree_2);
 			self.z_2.real = - (- self.degree_1 + sqrt_delta) / (2.0 * self.degree_2);
 		}
 		else {
-			let sqrt_delta = sqrt(- self.delta);
+			let sqrt_delta = maths::sqrt(- self.delta);
 			self.z_1.real = - self.degree_1 / (2.0 * self.degree_2);
 			self.z_1.imag = - sqrt_delta / (2.0 * self.degree_2);
 			self.z_2.real = - self.degree_1 / (2.0 * self.degree_2);
@@ -118,33 +121,78 @@ impl Solver for TwoDegreeSolver {
 	}
 
 	fn describe(&self) {
-		println!("Reduced form: {} {} * X ^ 0 {} {} * X ^ 1 {} {} * X ^ 2 = 0",
-		if self.degree_0 < 0.0 {"-"} else {""}, self.degree_0.abs(),
+		println!("Reduced form: {}{} * X^0 {} {} * X^1 {} {} * X^2 = 0",
+		if self.degree_0 < 0.0 {"- "} else {""}, self.degree_0.abs(),
 		if self.degree_1 < 0.0 {"-"} else {"+"}, self.degree_1.abs(),
 		if self.degree_2 < 0.0 {"-"} else {"+"}, self.degree_1.abs());
 		println!("Polynomial degree: 2");
 		if self.delta == 0.0 {
 			println!("Discriminant is null, the solution is:");
-			println!("{}", self.z_1.real);
+			println!("{:.2}", self.z_1.real);
 		}
 		else if self.delta > 0.0 {
 			println!("Discriminant is strictly positive, the two solutions are:");
-			println!("{}", self.z_1.real);
-			println!("{}", self.z_2.real);
+			println!("{:.2}", self.z_1.real);
+			println!("{:.2}", self.z_2.real);
 		}
 		else {
 			println!("Discriminant is strictly negative, the two complex solutions are:");
-			println!("{}{}i{}", self.z_1.real, if self.z_1.imag >= 0.0 {"+"} else {"-"}, self.z_1.imag.abs());
-			println!("{}{}i{}", self.z_2.real, if self.z_2.imag >= 0.0 {"+"} else {"-"}, self.z_2.imag.abs());
+			println!("{:.2}{}i{:.2}", self.z_1.real, if self.z_1.imag >= 0.0 {"+"} else {"-"}, self.z_1.imag.abs());
+			println!("{:.2}{}i{:.2}", self.z_2.real, if self.z_2.imag >= 0.0 {"+"} else {"-"}, self.z_2.imag.abs());
 		}
 	}
 }
 
-pub struct Complex {
-	real: f64,
-	imag: f64
+pub struct MoreDegreeSolver {
+	degrees : Vec<(u32, f64)>
 }
 
-pub fn sqrt<T>(number: T) -> T {
-	unimplemented!()
+impl <'a> MoreDegreeSolver {
+
+	pub fn new() -> Self {
+		MoreDegreeSolver {
+			degrees: Vec::new()
+		}
+	}
+}
+
+impl Solver for MoreDegreeSolver {
+	
+	fn solve(&mut self, degrees: &HashMap<u32, f64>) {
+		self.degrees = degrees
+			.iter()
+			.map(|(deg, val)| (*deg, *val))
+			.collect::<Vec<(u32, f64)>>();
+		self.degrees.sort_by_key(|&(deg, _)| deg);
+	}
+
+	fn describe(&self) {
+		print!("Reduced form: ");
+		for (i, (deg, val)) in self.degrees.iter().enumerate() {
+			if i == 0 {
+				print!("{}{} * X^{}", if *val < 0.0 {"- "} else {""}, val.abs(), deg);
+			}
+			else {
+				print!("{} {} * X^{}", if *val < 0.0 {"-"} else {"+"}, val.abs(), deg);
+			}
+		}
+		print!(" = 0\n");
+		println!("Polynomial degree: {}", self.degrees[self.degrees.len() - 1].0);
+		println!("The polynomial degree is stricly greater than 2, I can't solve.");
+	}
+}
+
+pub fn choose_solver(degrees: &HashMap<u32, f64>) -> Box<dyn Solver> {
+    let mut degrees_vec = degrees
+        .iter()
+        .map(|(deg, val)| (*deg, *val))
+        .collect::<Vec<(u32, f64)>>();
+    degrees_vec.sort_by_key(|&(deg, _)| deg);
+	println!("{}", degrees.len());
+    match degrees_vec[degrees.len() - 1].0 {
+        0 => Box::new(ZeroDegreeSolver::new()),
+        1 => Box::new(OneDegreeSolver::new()),
+        2 => Box::new(TwoDegreeSolver::new()),
+        _ => Box::new(MoreDegreeSolver::new())
+    }
 }
