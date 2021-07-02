@@ -214,7 +214,6 @@ pub fn choose_solver(degrees: &HashMap<u32, f64>) -> Box<dyn Solver> {
         .map(|(deg, val)| (*deg, *val))
         .collect::<Vec<(u32, f64)>>();
     degrees_vec.sort_by_key(|&(deg, _)| deg);
-    println!("{}", degrees.len());
     match degrees_vec[degrees.len() - 1].0 {
         0 => Box::new(ZeroDegreeSolver::new()),
         1 => Box::new(OneDegreeSolver::new()),

@@ -23,6 +23,8 @@ The `equation` has to follow a simple format like:
 But you also can write it in a more natural way:
 `7 + 14X -6X^2 = 13 - X + 2X^2`
 
+NB: if you intend to start the equation with a `-`, do instead `cargo run -- -- <equation>` as it could be interpreted as the beginning of a command line option.
+
 ## Walkthrough
 
 The lexing and parsing parts of this program use compilation theory inspired tools.
