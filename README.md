@@ -7,7 +7,14 @@ This program solves polynomial equations from 0 to 2 degrees.
 
 ## Usage
 
-If you have Rust installed:
+If you don't have Rust installed:
+
+```
+docker build -t computor_v1 .
+docker run -ti computor_v1
+```
+
+Locally or in your container:
 `cargo run <equation>`
 
 The `equation` has to follow a simple format like:
