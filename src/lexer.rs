@@ -135,7 +135,6 @@ impl Lexer {
         }
     }
 
-    // voir si possible de refacto la partie Final et FinalStar
     pub fn run(&mut self, equation: &str) -> Result<(), LexicalError> {
         let mut bytes: Vec<u8> = equation.as_bytes().to_vec();
         bytes.push(0x0);

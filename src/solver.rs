@@ -25,7 +25,7 @@ impl Solver for ZeroDegreeSolver {
 
     fn describe(&self) {
         println!(
-            "Reduced form: {}{} * X ^ 0 = 0",
+            "Reduced form: {}{} * X^0 = 0",
             if self.degree_0 < 0.0 { "- " } else { "" },
             self.degree_0.abs()
         );
@@ -112,8 +112,8 @@ impl Solver for TwoDegreeSolver {
             self.z_1.real = -self.degree_1 / (2.0 * self.degree_2);
         } else if self.delta > 0.0 {
             let sqrt_delta = maths::sqrt(self.delta);
-            self.z_1.real = -(-self.degree_1 - sqrt_delta) / (2.0 * self.degree_2);
-            self.z_2.real = -(-self.degree_1 + sqrt_delta) / (2.0 * self.degree_2);
+            self.z_1.real = (-self.degree_1 - sqrt_delta) / (2.0 * self.degree_2);
+            self.z_2.real = (-self.degree_1 + sqrt_delta) / (2.0 * self.degree_2);
         } else {
             let sqrt_delta = maths::sqrt(-self.delta);
             self.z_1.real = -self.degree_1 / (2.0 * self.degree_2);
@@ -131,26 +131,28 @@ impl Solver for TwoDegreeSolver {
             if self.degree_1 < 0.0 { "-" } else { "+" },
             self.degree_1.abs(),
             if self.degree_2 < 0.0 { "-" } else { "+" },
-            self.degree_1.abs()
+            self.degree_2.abs()
         );
         println!("Polynomial degree: 2");
+        println!("a = {}, b = {}, c = {}", self.degree_2, self.degree_1, self.degree_0);
+        println!("Δ = b^2 - 4ac = {}", self.delta);
         if self.delta == 0.0 {
-            println!("Discriminant is null, the solution is:");
-            println!("{:.2}", self.z_1.real);
+            println!("Discriminant is zero, the solution is:");
+            println!("-b / 2a = {:.2}", self.z_1.real);
         } else if self.delta > 0.0 {
             println!("Discriminant is strictly positive, the two solutions are:");
-            println!("{:.2}", self.z_1.real);
-            println!("{:.2}", self.z_2.real);
+            println!("(-b - √Δ) / 2a) = {:.2}", self.z_1.real);
+            println!("(-b + √Δ) / 2a) = {:.2}", self.z_2.real);
         } else {
             println!("Discriminant is strictly negative, the two complex solutions are:");
             println!(
-                "{:.2}{}i{:.2}",
+                "(-b - i√(-Δ)) / 2a = {:.2} {} {:.2} * i",
                 self.z_1.real,
                 if self.z_1.imag >= 0.0 { "+" } else { "-" },
                 self.z_1.imag.abs()
             );
             println!(
-                "{:.2}{}i{:.2}",
+                "(-b + i√(-Δ)) / 2a = {:.2} {} {:.2} * i",
                 self.z_2.real,
                 if self.z_2.imag >= 0.0 { "+" } else { "-" },
                 self.z_2.imag.abs()
