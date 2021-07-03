@@ -70,7 +70,9 @@ impl Solver for OneDegreeSolver {
             self.degree_1.abs()
         );
         println!("Polynomial degree: 1");
-        println!("The solution is:\n{}", self.x);
+        println!("a = {}, b = {}", self.degree_1, self.degree_0);
+        println!("The solution is:");
+        println!("-b / a = {:.2}", self.x);
     }
 }
 
