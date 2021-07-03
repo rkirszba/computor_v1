@@ -189,21 +189,21 @@ impl Solver for MoreDegreeSolver {
         for (i, (deg, val)) in self.degrees.iter().enumerate() {
             if i == 0 {
                 print!(
-                    "{}{} * X^{}",
+                    "{}{} * X^{} ",
                     if *val < 0.0 { "- " } else { "" },
                     val.abs(),
                     deg
                 );
             } else {
                 print!(
-                    "{} {} * X^{}",
+                    "{} {} * X^{} ",
                     if *val < 0.0 { "-" } else { "+" },
                     val.abs(),
                     deg
                 );
             }
         }
-        print!(" = 0\n");
+        print!("= 0\n");
         println!(
             "Polynomial degree: {}",
             self.degrees[self.degrees.len() - 1].0
